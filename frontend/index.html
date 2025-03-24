@@ -1,0 +1,76 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Mini Twitter</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 2rem; }
+    h1 { color: #4a90e2; }
+    form { margin-bottom: 1rem; }
+    input[name="tweet"] { padding: 0.5rem; width: 300px; }
+    button { padding: 0.5rem 1rem; }
+    ul { list-style: disc inside; padding: 0; }
+    li { padding: 0.2rem 0; }
+  </style>
+</head>
+<body>
+  <h1>Mini Twitter 🐦</h1>
+  <form id="tweetForm">
+    <input type="text" name="tweet" id="tweetInput" placeholder="Votre message..." required />
+    <button type="submit">Publier</button>
+  </form>
+  <h2>Tweets :</h2>
+  <ul id="tweets">
+    <!-- Les tweets seront insérés ici -->
+  </ul>
+
+  <script>
+    // URL de base de l'API (on utilise l'adresse du navigateur mais avec le port de l'API)
+    let apiPort = 30081;  // Port NodePort prévu pour l'API PHP
+    let apiBaseUrl = window.location.protocol + '//' + window.location.hostname + ':' + apiPort;
+    // const apiBaseUrl = 'http://192.168.49.2:30081';
+
+    // Fonction pour afficher la liste des tweets
+    function refreshTweetList(tweets) {
+      const tweetsUl = document.getElementById('tweets');
+      tweetsUl.innerHTML = '';  // vide la liste actuelle
+      tweets.forEach(content => {
+        const li = document.createElement('li');
+        li.textContent = content;  // insère le texte du tweet en échappant tout code
+        tweetsUl.appendChild(li);
+      });
+    }
+
+    // Récupérer et afficher la liste initiale des tweets au chargement de la page
+    fetch(apiBaseUrl)
+      .then(response => response.json())
+      .then(data => { refreshTweetList(data); })
+      .catch(err => { console.error('Erreur lors de la récupération des tweets:', err); });
+
+    // Gestion de la soumission du formulaire pour envoyer un nouveau tweet
+    document.getElementById('tweetForm').addEventListener('submit', function(event) {
+      event.preventDefault();  // empêche le rechargement de la page
+      const tweetInput = document.getElementById('tweetInput');
+      const tweetText = tweetInput.value;
+      if (tweetText.trim() === '') {
+        return; // ne rien faire si la zone est vide (le champ est required de toute façon)
+      }
+      // Envoyer le tweet à l'API via une requête POST
+      fetch(apiBaseUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'tweet=' + encodeURIComponent(tweetText)
+      })
+      .then(response => response.json())
+      .then(data => {
+        // Mettre à jour la liste des tweets avec la réponse de l'API
+        refreshTweetList(data);
+        tweetInput.value = '';  // vider le champ de saisie
+      })
+      .catch(err => { console.error("Erreur lors de l'envoi du tweet:", err); });
+    });
+  </script>
+</body>
+</html>
+
