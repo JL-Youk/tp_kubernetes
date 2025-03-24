@@ -58,6 +58,7 @@ les manifestes Kubernetes (mysql-deployment.yaml, etc.)
 
 ### installer docker, kubernetes, minikube
 
+```bash
 tp_kubernetes/
 ├── backend-php/
 │   └── index.php
@@ -71,7 +72,8 @@ tp_kubernetes/
 │   └── backend-deployment.yaml
 │   └── frontend-deployment.yaml
 │   └── mysql-deployment.yaml
-etc
+    etc
+```
 
 ### 2. Créer les Dockerfiles
 
