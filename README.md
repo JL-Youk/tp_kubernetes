@@ -19,11 +19,11 @@ sudo apt install git
 ```
 ### 2. Cloner le projet dans sa VM
 ```bash
-git clone 'lien du projet'
+git clone https://github.com/JL-Youk/tp_kubernetes.git
 ```
 ### 3. Ouvrir le projet
 ```bash
-cd nom-du-projet
+cd tp_kubernetes
 ```
 ### 4. Voir les mises à jour sur le projet 
 ```bash
