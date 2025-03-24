@@ -69,7 +69,7 @@ tp_kubernetes/
 ├── mysql/
 │   └── init.sql
 ├── k8s/
-│   └── backend-deployment.yaml
+│   └── api-deployment.yaml
 │   └── frontend-deployment.yaml
 │   └── mysql-deployment.yaml
     etc
