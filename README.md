@@ -149,7 +149,7 @@ EXPOSE 80
 ### Construction et chargement des images Docker dans Minikube
 ```bash
 eval $(minikube docker-env)
-```ancetre json
+```
 Cette commande modifie vos variables d’environnement Docker (DOCKER_HOST, etc.) pour pointer vers le Docker de Minikube. Désormais, toute commande docker build ou docker images agit à l’intérieur de Minikube. (Pour revenir au Docker local par défaut, utilisez eval $(minikube docker-env -u)).
 ```
 
