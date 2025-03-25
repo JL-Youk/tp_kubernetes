@@ -219,14 +219,12 @@ kubectl apply -f k8s/api-service.yaml
 ```bash
 kubectl get pods
 ```
-#### Vous devriez voir trois pods (nommés avec les préfixes `mysql-...`, `api-...`, `frontend-...`) avec **STATUS** `Running`. Au début, le pod MySQL peut prendre quelques instants pour initialiser la base de données (STATUS `ContainerCreating` puis `Running`). Le pod API peut ne pas être prêt tant que MySQL n’est pas opérationnel (selon comment Apache/PHP gère la connexion, mais dans notre cas il va simplement renvoyer une erreur s’il n’arrive pas à se connecter, puis ça fonctionnera aux essais suivants). Le pod frontend devrait démarrer très rapidement.
+#### Vous devriez voir trois pods (nommés avec les préfixes ( ou alors uniquement api-... si vous n'avez pas créer les autres pods ) `mysql-...`, `api-...`, `frontend-...`) avec **STATUS** `Running`. Au début, le pod MySQL peut prendre quelques instants pour initialiser la base de données (STATUS `ContainerCreating` puis `Running`). Le pod API peut ne pas être prêt tant que MySQL n’est pas opérationnel (selon comment Apache/PHP gère la connexion, mais dans notre cas il va simplement renvoyer une erreur s’il n’arrive pas à se connecter, puis ça fonctionnera aux essais suivants). Le pod frontend devrait démarrer très rapidement.
 
 ### Vous pouvez aussi lister les services pour voir les NodePorts :
 ```bash
 kubectl get svc
 ```
-
-
 
 #### Info❗Si tu ne faisais pas eval $(minikube docker-env) et construisais ton image en local (sur ton hôte), alors Kubernetes dans Minikube ne verrait pas l'image.
 Dans ce cas, tu devrais pousser l'image dans un registre (ex: Docker Hub ou un registre privé) et indiquer son nom complet :
