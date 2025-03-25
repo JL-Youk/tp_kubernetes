@@ -95,3 +95,141 @@ minikube service frontend-service
 ```
 
 
+
+
+
+# Explication pour créer le service api
+
+## Installation
+### Avoir docker, minikube et kubernetes sur sa machine
+### verifier avec les commandes:
+
+```bash
+docker --version
+```
+```bash
+minikube version
+```
+```bash
+kubectl version --client
+```
+
+## Démarrer le cluster Minikube
+### Lancez Minikube
+```bash
+minikube start --driver=docker
+```
+Minikube va télécharger les images nécessaires et initialiser un cluster Kubernetes un nœud. Ce processus peut prendre quelques minutes la première fois. Une fois terminé, vous devriez voir un message confirmant que le cluster est démarré et configuré, par exemple :
+### Vous pouvez tester en listant le nœud Kubernetes
+```bash
+kubectl get nodes
+```
+### Sortie attendue :
+```bash
+NAME       STATUS   ROLES           AGE   VERSION
+minikube   Ready    control-plane   1m    v1.xx.x
+```
+
+##  Dockerfile pour l’API PHP
+### Créons le fichier backend-php/Dockerfile avec le contenu suivant :
+```bash
+# Utiliser l'image PHP officielle avec Apache
+FROM php:8.1-apache
+
+# Installer l'extension PHP MySQLi (et PDO) pour permettre la connexion à MySQL
+RUN docker-php-ext-install mysqli pdo pdo_mysql
+
+# Copie du code de l'API (index.php) dans le répertoire par défaut d'Apache (/var/www/html)
+COPY index.php /var/www/html/
+
+# Exposer le port 80 (optionnel, pour documentation)
+EXPOSE 80
+```
+
+### Construction et chargement des images Docker dans Minikube
+```bash
+eval $(minikube docker-env)
+```ancetre json
+Cette commande modifie vos variables d’environnement Docker (DOCKER_HOST, etc.) pour pointer vers le Docker de Minikube. Désormais, toute commande docker build ou docker images agit à l’intérieur de Minikube. (Pour revenir au Docker local par défaut, utilisez eval $(minikube docker-env -u)).
+```
+
+### Construisons les images (assurez-vous d’être dans le répertoire tp-minikube où se trouvent les dossiers ou sinon adapté la commande suivante):
+```bash
+docker build -t php-api:1.0 ./backend-php
+```
+Ces commandes vont lancer la construction des images en utilisant les Dockerfile de chaque dossier. Une connexion internet est requise au moins la première fois pour télécharger les images de base (php:8.1-apache et nginx:1.23-alpine). Une fois terminées, vous pouvez vérifier que les images sont bien présentes dans Docker (toujours dans l’environnement Minikube) :
+```bash
+docker images
+```
+
+## Création des manifestes Kubernetes (YAML) pour le déploiement
+
+### Déploiement et Service pour l’API PHP
+#### Déploiement
+```bash
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api
+  template:
+    metadata:
+      labels:
+        app: api
+    spec:
+      containers:
+      - name: php-api
+        image: php-api:1.0         # image construite pour l'API PHP
+        imagePullPolicy: IfNotPresent
+```
+#### Service
+```bash
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-service
+spec:
+  selector:
+    app: api
+  ports:
+    - port: 80
+      targetPort: 80
+      nodePort: 30081
+  type: NodePort
+```
+### Explications
+#### Le **Deployment api** crée un pod pour l’API PHP à partir de notre image locale `php-api:1.0`. Kubernetes va chercher cette image via le daemon Docker de Minikube (c’est pour cela qu’on a construit l’image dans Minikube). Le `imagePullPolicy: IfNotPresent` évite de tenter de la télécharger d'un registre.
+
+#### Le **Service api-service** expose l’API PHP. Nous choisissons ici de le faire via un **NodePort** (port accessible depuis l’extérieur du cluster sur le nœud). On fixe `nodePort: 30081` (un nombre dans la plage 30000-32767) pour connaître à l’avance le port à utiliser. Ce service écoutera le port 80 du côté du cluster (c’est-à-dire toute requête arrivant sur `api-service:80` sera routée vers le conteneur sur son port 80). Avec `NodePort`, Kubernetes ouvre sur le nœud (ici la VM Minikube) le port 30081 et toute connexion reçue sur ce port sera redirigée vers le service. Cela nous permettra d’appeler l’API depuis le navigateur (via l’IP de Minikube et ce port).
+    
+#### Le selector `app: api` lie ce service au pod/deployment de l’API.
+
+
+## API (Deployment + Service)
+```bash
+kubectl apply -f k8s/api-deployment.yaml
+kubectl apply -f k8s/api-service.yaml
+```
+
+### Une fois tout appliqué, vérifiez l’état des Pods et Services :
+```bash
+kubectl get pods
+```
+#### Vous devriez voir trois pods (nommés avec les préfixes `mysql-...`, `api-...`, `frontend-...`) avec **STATUS** `Running`. Au début, le pod MySQL peut prendre quelques instants pour initialiser la base de données (STATUS `ContainerCreating` puis `Running`). Le pod API peut ne pas être prêt tant que MySQL n’est pas opérationnel (selon comment Apache/PHP gère la connexion, mais dans notre cas il va simplement renvoyer une erreur s’il n’arrive pas à se connecter, puis ça fonctionnera aux essais suivants). Le pod frontend devrait démarrer très rapidement.
+
+### Vous pouvez aussi lister les services pour voir les NodePorts :
+```bash
+kubectl get svc
+```
+
+
+
+#### Info❗Si tu ne faisais pas eval $(minikube docker-env) et construisais ton image en local (sur ton hôte), alors Kubernetes dans Minikube ne verrait pas l'image.
+Dans ce cas, tu devrais pousser l'image dans un registre (ex: Docker Hub ou un registre privé) et indiquer son nom complet :
+```bash
+image: mydockerhubuser/php-api:1.0
+```
