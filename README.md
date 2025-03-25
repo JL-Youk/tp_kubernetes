@@ -154,9 +154,11 @@ Cette commande modifie vos variables d’environnement Docker (DOCKER_HOST, etc.
 ```
 
 ### Construisons les images (assurez-vous d’être dans le répertoire tp-minikube où se trouvent les dossiers ou sinon adapté la commande suivante):
+
 ```bash
 docker build -t php-api:1.0 ./backend-php
 ```
+
 Ces commandes vont lancer la construction des images en utilisant les Dockerfile de chaque dossier. Une connexion internet est requise au moins la première fois pour télécharger les images de base (php:8.1-apache et nginx:1.23-alpine). Une fois terminées, vous pouvez vérifier que les images sont bien présentes dans Docker (toujours dans l’environnement Minikube) :
 ```bash
 docker images
