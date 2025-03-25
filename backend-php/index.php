@@ -8,11 +8,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     header("Access-Control-Allow-Headers: Content-Type");
     exit(0);
 }
-// Paramètres de connexion à la base de données (depuis les variables d'environnement)
-$db_host = getenv('DB_HOST') ?: 'mysql';
-$db_name = getenv('DB_NAME') ?: 'tweets';
-$db_user = getenv('DB_USER') ?: 'root';
-$db_pass = getenv('DB_PASS') ?: 'rootpassword';
+
+
+echo base64_decode('QnJhdm8sIG1haW50ZW5hbnQgdHUgdmEgcG91dm9pciBjcsOpZXIgdW4gYXBpLXNlY3JldC55YW1sIGEgbGllciBhIHRvbiBhcGktZGVwbG95bWVudC55YW1sIGNvbW1lIGluZm8gOiAgIERCX1VTRVI6IGRIZGxaWFIxYzJWeSwgREJfUEFTUzogZEhkbFpYUndZWE56ICwidHdlZXRwYXNzIiBlbmNvZMOpIGVuIGJhc2U2NCwgbXlzcWwtdXNlcjogZEhkbFpYUjFjMlZ5ICwgbXlzcWwtcGFzc3dvcmQ6IGRIZGxaWFJ3WVhOeiwgZXQgZWZmYWNlciBsYSBsaWduZSAxNCBldCAxNSA=');
+// lignes a effacer :
+exit();
+
+$host = getenv('DB_HOST');
+$db   = getenv('DB_NAME');
+$user = getenv('DB_USER');
+$pass = getenv('DB_PASS');
+
+
+var_dump($host);
+var_dump($db);
+var_dump($user);
+var_dump($pass);
+
+exit();
 
 // Connexion à MySQL
 $conn = new mysqli($db_host, $db_user, $db_pass, $db_name);
