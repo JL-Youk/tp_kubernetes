@@ -10,20 +10,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 
-echo base64_decode('QnJhdm8sIG1haW50ZW5hbnQgdHUgdmEgcG91dm9pciBjcsOpZXIgdW4gYXBpLXNlY3JldC55YW1sIGEgbGllciBhIHRvbiBhcGktZGVwbG95bWVudC55YW1sIGNvbW1lIGluZm8gOiAgIERCX1VTRVI6IGRIZGxaWFIxYzJWeSwgREJfUEFTUzogZEhkbFpYUndZWE56ICwidHdlZXRwYXNzIiBlbmNvZMOpIGVuIGJhc2U2NCwgbXlzcWwtdXNlcjogZEhkbFpYUjFjMlZ5ICwgbXlzcWwtcGFzc3dvcmQ6IGRIZGxaWFJ3WVhOeiwgZXQgZWZmYWNlciBsYSBsaWduZSAxNCBldCAxNSA=');
-// lignes a effacer :
+$messageSuperSecret base64_decode('QnJhdm8sIG1haW50ZW5hbnQgdHUgdmEgcG91dm9pciBjcsOpZXIgdW4gYXBpLXNlY3JldC55YW1sIGEgbGllciBhIHRvbiBhcGktZGVwbG95bWVudC55YW1sIGNvbW1lIGluZm8gOiAgIERCX1VTRVI6IGRIZGxaWFIxYzJWeSwgREJfUEFTUzogZEhkbFpYUndZWE56ICwidHdlZXRwYXNzIiBlbmNvZMOpIGVuIGJhc2U2NCwgbXlzcWwtdXNlcjogZEhkbFpYUjFjMlZ5ICwgbXlzcWwtcGFzc3dvcmQ6IGRIZGxaWFJ3WVhOeiwgZXQgZWZmYWNlciBsYSBsaWduZSAxNCBldCAxNSA=');
+
+$response = [
+    'messageSuperSecret' => $messageSuperSecret,
+];
+
+echo json_encode($response, JSON_PRETTY_PRINT);
 exit();
 
+// Récupération des variables d’environnement
 $host = getenv('DB_HOST');
 $db   = getenv('DB_NAME');
 $user = getenv('DB_USER');
 $pass = getenv('DB_PASS');
 
+$response2 = [
+    'host' => $host,
+    'db' => $db,
+    'user' => $user,
+    'pass' => $pass
+];
 
-var_dump($host);
-var_dump($db);
-var_dump($user);
-var_dump($pass);
+echo json_encode($response2, JSON_PRETTY_PRINT);
 
 exit();
 
