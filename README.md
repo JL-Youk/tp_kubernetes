@@ -233,3 +233,104 @@ Dans ce cas, tu devrais pousser l'image dans un registre (ex: Docker Hub ou un r
 ```bash
 image: mydockerhubuser/php-api:1.0
 ```
+
+
+## Creation du fichier secret.yaml
+Les secrets permettent de stocker des informations sensibles (comme les mots de passe) de manière sécurisée dans Kubernetes.
+
+```bash
+apiVersion: v1
+kind: Secret
+metadata:
+  name: api-secret
+type: Opaque
+data:
+  mysql-user: dHdlZXR1c2Vy
+  mysql-password: dHdlZXRwYXNz
+```
+### Appliquer le Secret :
+```bash
+kubectl apply -f k8s/secret.yaml
+```
+
+## Création du fichier configMap.yaml
+
+Les ConfigMap permettent de passer des configurations non sensibles (noms de base de données, utilisateurs, etc.).
+```bash
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: api-config
+data:
+  phrase: Hello
+```
+### Appliquer le ConfigMap :
+```bash
+kubectl apply -f k8s/configmap.yaml
+```
+
+## Utilisation dans le déploiement MySQL
+
+```bash
+spec:
+  containers:
+  - name: php-api
+    image: php-api:1.0         # image construite pour l'API PHP
+    imagePullPolicy: IfNotPresent
+    env:
+    - name: DB_USER
+      valueFrom:
+        secretKeyRef:
+          name: api-secret
+          key: mysql-user
+    - name: DB_PASS
+      valueFrom:
+        secretKeyRef:
+          name: api-secret
+          key: mysql-password
+    - name: PHRASE
+      valueFrom:
+        configMapKeyRef:
+          name: api-config
+          key: phrase
+```
+### 
+
+## Création du fichier hpa.yaml (autoscaling)
+```bash
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: api-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: api
+  minReplicas: 3
+  maxReplicas: 20
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 60
+```
+Ce HPA maintient 3 à 20 pods selon l'utilisation CPU, et scale lorsque la moyenne dépasse 60%.
+
+### Appliquer le HPA :
+```bash
+kubectl apply -f k8s/hpa.yaml
+```
+
+## Vérification finale
+### Liste les pods, services, HPA
+```bash
+kubectl get all
+kubectl get hpa
+```
+### Voir l’état du HPA :
+```bash
+kubectl describe hpa api-hpa
+```
