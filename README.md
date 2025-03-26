@@ -296,6 +296,31 @@ spec:
 ```
 ### 
 
+## Creation des limites d'utilisation de ressource
+```bash
+resources:
+  requests:
+    cpu: "100m"
+    memory: "128Mi"
+  limits:
+    cpu: "500m"
+    memory: "256Mi"
+```
+### ( Exemple complet avec le conteneur)
+```bash
+containers:
+- name: php-api
+  image: php-api:1.0
+  imagePullPolicy: Never
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "128Mi"
+    limits:
+      cpu: "500m"
+      memory: "256Mi"
+```
+
 ## Création du fichier hpa.yaml (autoscaling)
 ```bash
 apiVersion: autoscaling/v2
