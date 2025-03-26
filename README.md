@@ -269,7 +269,7 @@ data:
 kubectl apply -f k8s/configmap.yaml
 ```
 
-## Utilisation dans le déploiement MySQL
+## Utilisation dans le déploiement.yaml
 
 ```bash
 spec:
