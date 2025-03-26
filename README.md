@@ -367,15 +367,46 @@ créer un dossier 'save' dans notre le projet
 ```bash
 mkdir save
 ```
-Executer la commande suivante pour sauvegarder le les deployments ( dans le namespace defaut dans le cas suivant )
 
+ ### Sauvegarder tous les objets d’un namespace
+ ```bash
+kubectl get deploy,svc,cm,secret,hpa,pvc,ingress --namespace=default -o yaml > save/backup-complet.yaml
+```
+
+Tu peux aussi tout extraire ressource par ressource, pour les sauvegarder dans des fichiers séparés :
 ```bash
 kubectl get deployment --namespace=default -o yaml > save/deployments.yaml
+kubectl get service --namespace=default -o yaml > save/services.yaml
+kubectl get configmap --namespace=default -o yaml > save/configmaps.yaml
+kubectl get secret --namespace=default -o yaml > save/secrets.yaml
+kubectl get hpa --namespace=default -o yaml > save/hpas.yaml
 ```
-La commande est similaire pout les autres type de ressource : 
+##  Réimporter les ses ressources
+
+Si tu as sauvegardé les objets dans un ou plusieurs fichiers .yaml, tu peux simplement utiliser :
 ```bash
-kubectl get service --namespace=default -o yaml > services.yaml
-kubectl get configmap --namespace=default -o yaml > configmaps.yaml
-kubectl get secret --namespace=default -o yaml > secrets.yaml
-kubectl get hpa --namespace=default -o yaml > hpas.yaml
+kubectl apply -f save/backup-complet.yaml
 ```
+Ou, si tu as plusieurs fichiers séparés (plus recommandé) :
+```bash
+kubectl apply -f save/deployments.yaml
+kubectl apply -f save/services.yaml
+kubectl apply -f save/configmaps.yaml
+kubectl apply -f save/secrets.yaml
+kubectl apply -f save/hpas.yaml
+```
+Tu peux aussi tout réappliquer depuis un dossier :
+```bash
+kubectl apply -f k8s/
+```
+
+### ⚠️ Attention à l’ordre !
+Certaines ressources dépendent des autres. Par exemple :
+Les Pods peuvent dépendre des ConfigMaps, Secrets, ou Services existants.
+Le HPA dépend du Deployment.
+#### L’ordre idéal d’application :
+configmaps.yaml
+secrets.yaml
+services.yaml
+deployments.yaml
+hpas.yaml
