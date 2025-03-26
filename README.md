@@ -359,3 +359,23 @@ kubectl get hpa
 ```bash
 kubectl describe hpa api-hpa
 ```
+
+
+## Sauvegarder ses ressources
+
+créer un dossier 'save' dans notre le projet
+```bash
+mkdir save
+```
+Executer la commande suivante pour sauvegarder le les deployments ( dans le namespace defaut dans le cas suivant )
+
+```bash
+kubectl get deployment --namespace=default -o yaml > save/deployments.yaml
+```
+La commande est similaire pout les autres type de ressource : 
+```bash
+kubectl get service --namespace=default -o yaml > services.yaml
+kubectl get configmap --namespace=default -o yaml > configmaps.yaml
+kubectl get secret --namespace=default -o yaml > secrets.yaml
+kubectl get hpa --namespace=default -o yaml > hpas.yaml
+```
