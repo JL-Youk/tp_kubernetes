@@ -1,12 +1,12 @@
 <?php
 $user = getenv('DB_USER') ?: '';
 $pass = getenv('DB_PASS') ?: '';
-$phrase = getenv('phrase') ?: '';
+$phrase = getenv('PHRASE') ?: '';
 
 $response = [
     'user' => $user,
     'pass' => $pass,
-    'phrase' => $phrase,
+    'PHRASE' => $phrase,
 ];
 
 header('Content-Type: application/json');
