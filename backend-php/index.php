@@ -1,13 +1,13 @@
 <?php
-// Récupération des variables d’environnement
 $host = getenv('DB_HOST') || '';
 $db   = getenv('DB_NAME') || '';
 $user = getenv('DB_USER') || '';
 $pass = getenv('DB_PASS') || '';
-$phrase_acceuil = getenv('phrase_acceuil') || '';
+
+$phrase = getenv('phrase') || '';
 
 $response = [
-    'phrase_acceuil' => $phrase_acceuil,
+    'phrase' => $phrase,
     'host' => $host,
     'db' => $db,
     'user' => $user,
